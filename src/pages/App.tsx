@@ -7,16 +7,33 @@ import { ITarefa } from '../types/tarefa';
 
 function App() {
   const [tarefas, setTarefas] = useState<ITarefa[]>([]);
-  const [selecionado, setSelecionado] = useState<ITarefa>();
+  const [tarefaSelecionada, setTarefaSelecionada] = useState<ITarefa>();
 
-  function selecionaTarefa(tarefaSelecionada: ITarefa) {
-    setSelecionado(tarefaSelecionada);
+  function selecionaTarefa(selecionada: ITarefa) {
+    setTarefaSelecionada(selecionada);
     setTarefas(tarefasAnteriores => tarefasAnteriores.map(
       tarefa => ({
         ...tarefa,
-        selecionado: tarefa.id === tarefaSelecionada.id ? true : false
+        selecionado: tarefa.id === selecionada.id ? true : false
       })
     ));
+  }
+
+  
+  function finalizarTarefa() {
+    if(tarefaSelecionada) {
+      setTarefaSelecionada(undefined);
+      tarefaSelecionada.selecionado = false;
+      tarefaSelecionada.completado = true;
+
+      tarefas.forEach((tarefa, index) => {
+        if (tarefa.id === tarefaSelecionada.id) {
+          tarefas[index] = tarefaSelecionada;
+        }
+      });
+
+      setTarefas(tarefas);
+    }
   }
   
   return (
@@ -27,7 +44,8 @@ function App() {
         selecionaTarefa={selecionaTarefa}
       />
       <Cronometro 
-        selecionado={selecionado}
+        tarefaSelecionada={tarefaSelecionada}
+        finalizarTarefa={finalizarTarefa}
       />
     </div>
   );
